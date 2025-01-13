@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: eventstoredb
+  namespace: eventstoredb
+spec:
+  serviceName: "eventstoredb"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: eventstoredb
+  template:
+    metadata:
+      labels:
+        app: eventstoredb
+    spec:
+      containers:
+        - name: eventstoredb
+          image: docker.eventstore.com/eventstore/eventstoredb-ee:24.10.1
+          ports:
+            - containerPort: 2113 # HTTP
+          env:
+            - name: EVENTSTORE_INSECURE
+              valueFrom:
+                configMapKeyRef:
+                  name: eventstoredb-config
+                  key: EVENTSTORE_INSECURE
+            - name: EVENTSTORE_CLUSTER_SIZE
+              valueFrom:
+                configMapKeyRef:
+                  name: eventstoredb-config
+                  key: EVENTSTORE_CLUSTER_SIZE
+            - name: EVENTSTORE_DISCOVER_VIA_DNS
+              valueFrom:
+                configMapKeyRef:
+                  name: eventstoredb-config
+                  key: EVENTSTORE_DISCOVER_VIA_DNS
+            - name: EVENTSTORE_CLUSTER_DNS
+              valueFrom:
+                configMapKeyRef:
+                  name: eventstoredb-config
+                  key: EVENTSTORE_CLUSTER_DNS
+            - name: EVENTSTORE_CLUSTER_GOSSIP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: eventstoredb-config
+                  key: EVENTSTORE_CLUSTER_GOSSIP_PORT
+            - name: EVENTSTORE_NODE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: eventstoredb-config
+                  key: EVENTSTORE_NODE_PORT
+            - name: EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP
+              valueFrom:
+                configMapKeyRef:
+                  name: eventstoredb-config
+                  key: EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP
+            - name: EVENTSTORE_RUN_PROJECTIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: eventstoredb-config
+                  key: EVENTSTORE_RUN_PROJECTIONS
+            - name: EVENTSTORE_START_STANDARD_PROJECTIONS
+              valueFrom:
+                configMapKeyRef:
+                  name: eventstoredb-config
+                  key: EVENTSTORE_START_STANDARD_PROJECTIONS
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/eventstore
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: "microk8s-hostpath-retain"
+        resources:
+          requests:
+            storage: 10Gi # Adjust based on your storage needs

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: eventstoredb-config
+  namespace: eventstoredb
+data:
+  EVENTSTORE_INSECURE: "true"
+  EVENTSTORE_CLUSTER_SIZE: "3"
+  EVENTSTORE_DISCOVER_VIA_DNS: "true"
+  EVENTSTORE_CLUSTER_DNS: "eventstoredb.eventstoredb.svc.cluster.local"
+  EVENTSTORE_CLUSTER_GOSSIP_PORT: "2113"
+  EVENTSTORE_NODE_PORT: "2113"
+  EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP: "true"
+  EVENTSTORE_RUN_PROJECTIONS: "All"
+  EVENTSTORE_START_STANDARD_PROJECTIONS: "true"
